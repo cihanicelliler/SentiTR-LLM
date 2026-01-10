@@ -35,7 +35,7 @@ Bu rapor, Türkçe duygu analizi için geliştirilen **BERT + GPT-2 Ensemble** m
 
 ### 1.2 Kelime Uzunluğu Dağılımı
 
-![Kelime Uzunluğu Dağılımı](outputs/word_length_distribution.png)
+![Kelime Uzunluğu Dağılımı](word_length_distribution.png)
 
 Veri setindeki cümlelerin kelime uzunluğu dağılımı incelendiğinde:
 - Ortalama cümle uzunluğu: ~12-15 kelime
@@ -135,7 +135,7 @@ P_ensemble = α × P_encoder + (1-α) × P_llm
 
 ### 4.2 Benchmark Karşılaştırması
 
-![Benchmark Karşılaştırması](outputs/benchmark_comparison.png)
+![Benchmark Karşılaştırması](benchmark_comparison.png)
 
 Ensemble modeli:
 - BERT'e göre **+0.82% F1** iyileşme
@@ -148,7 +148,7 @@ Ensemble modeli:
 
 ### 5.1 Confusion Matrix
 
-![Confusion Matrix](outputs/confusion_matrix_Confusion_Matrix.png)
+![Confusion Matrix](confusion_matrix_Confusion_Matrix.png)
 
 **Sınıf Bazlı Performans:**
 
@@ -171,7 +171,7 @@ En sık yapılan hatalar (yüksek confidence ile yanlış tahmin):
 
 ### 5.3 Hata Analizi Tablosu
 
-![Hata Analizi](outputs/error_analysis_table.png)
+![Hata Analizi](error_analysis_table.png)
 
 ---
 
@@ -187,7 +187,7 @@ SHAP (SHapley Additive exPlanations) analizi ile modelin karar verme sürecindek
 **Negatif Duygu İçin Önemli Kelimeler:**
 - "zarar", "düşüş", "kriz", "kayıp", "olumsuz"
 
-Detaylı SHAP görselleştirmesi: [shap_explanation.html](outputs/shap_explanation.html)
+Detaylı SHAP görselleştirmesi: [shap_explanation.html](../outputs/encoder/shap_explanation.html)
 
 ---
 
