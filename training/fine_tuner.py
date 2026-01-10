@@ -1,9 +1,19 @@
+import torch
 from models.encoder import SentimentEncoder
 from models.llm import SentimentLLMClassifier
 from training.trainer import SentiTRTrainer
 from utils.logger import setup_logger
 
 logger = setup_logger("FineTuner")
+
+def get_fp16_setting():
+    """Returns whether fp16 should be used based on available device."""
+    if torch.backends.mps.is_available():
+        # MPS doesn't support fp16 with gradient scaling in older PyTorch versions
+        return False
+    elif torch.cuda.is_available():
+        return True
+    return False
 
 def train_encoder_model(args, dataset):
     """
@@ -62,7 +72,7 @@ def train_llm_model(args, dataset):
         batch_size=args.batch_size,
         epochs=args.epochs,
         learning_rate=args.learning_rate,
-        fp16=True # Likely needed for LLM
+        fp16=get_fp16_setting()  # Automatically set based on device (disabled for MPS)
     )
     
     metrics = trainer.train()

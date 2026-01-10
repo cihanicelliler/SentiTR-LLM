@@ -101,17 +101,48 @@ class SentimentLLMClassifier(torch.nn.Module):
         
         self.model = prepare_model_for_kbit_training(self.model)
         
+        # Auto-detect target modules based on model architecture
+        # BERT/RoBERTa/ELECTRA: query, value
+        # LLaMA/Mistral/GPT: q_proj, v_proj
+        target_modules = self._detect_target_modules()
+        
         peft_config = LoraConfig(
             task_type=TaskType.SEQ_CLS,
             inference_mode=False,
             r=16,
             lora_alpha=32,
             lora_dropout=0.1,
-            target_modules=["q_proj", "v_proj"]
+            target_modules=target_modules
         )
         
         self.model = get_peft_model(self.model, peft_config)
         self.model.print_trainable_parameters()
+
+    def _detect_target_modules(self):
+        """Auto-detect LoRA target modules based on model architecture."""
+        # Get all module names from the model
+        module_names = [name for name, _ in self.model.named_modules()]
+        module_names_str = " ".join(module_names)
+        
+        # BERT/RoBERTa/ELECTRA style (encoder models)
+        if "query" in module_names_str and "value" in module_names_str:
+            return ["query", "value"]
+        # LLaMA/Mistral/GPT-NeoX style (decoder models)
+        elif "q_proj" in module_names_str and "v_proj" in module_names_str:
+            return ["q_proj", "v_proj"]
+        # GPT-2/GPT-J style
+        elif "c_attn" in module_names_str:
+            return ["c_attn"]
+        # Fallback: try common patterns
+        else:
+            # Search for attention-related modules
+            for name in module_names:
+                if "query" in name.lower():
+                    return ["query", "value"]
+                if "q_proj" in name.lower():
+                    return ["q_proj", "v_proj"]
+            # Ultimate fallback
+            return ["query", "value"]
 
     def forward(self, **kwargs):
         return self.model(**kwargs)
